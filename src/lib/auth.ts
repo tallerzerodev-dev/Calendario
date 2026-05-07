@@ -20,7 +20,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         where: { email: user.email },
       });
 
-      return Boolean(allowed);
+      if (allowed) return true;
+
+      const parseList = (value?: string | null) =>
+        (value ?? "")
+          .split(",")
+          .map((email) => email.trim())
+          .filter(Boolean);
+
+      const adminEmails = new Set(parseList(process.env.SEED_ADMIN_EMAIL));
+      const studentEmails = new Set(
+        parseList(process.env.SEED_STUDENT_EMAILS),
+      );
+
+      const isAllowed = adminEmails.has(user.email) || studentEmails.has(user.email);
+
+      if (!isAllowed) return false;
+
+      await prisma.whitelist.upsert({
+        where: { email: user.email },
+        update: {},
+        create: { email: user.email },
+      });
+
+      await prisma.user.upsert({
+        where: { email: user.email },
+        update: { role: adminEmails.has(user.email) ? "ADMIN" : "STUDENT" },
+        create: {
+          email: user.email,
+          role: adminEmails.has(user.email) ? "ADMIN" : "STUDENT",
+          name: user.name ?? null,
+        },
+      });
+
+      return true;
     },
     async jwt({ token, user }) {
       if (user?.email) {
