@@ -6,26 +6,65 @@ export async function POST() {
     return NextResponse.json({ error: "No permitido" }, { status: 403 });
   }
 
-  const adminEmail = process.env.SEED_ADMIN_EMAIL;
+  const rawAdmins = process.env.SEED_ADMIN_EMAIL;
+  const rawStudents = process.env.SEED_STUDENT_EMAILS;
 
-  if (!adminEmail) {
+  if (!rawAdmins) {
     return NextResponse.json(
       { error: "SEED_ADMIN_EMAIL no configurado" },
       { status: 400 },
     );
   }
 
-  const whitelist = await prisma.whitelist.upsert({
-    where: { email: adminEmail },
-    update: {},
-    create: { email: adminEmail },
+  const admins = rawAdmins
+    .split(",")
+    .map((email) => email.trim())
+    .filter(Boolean);
+
+  const students = (rawStudents ?? "")
+    .split(",")
+    .map((email) => email.trim())
+    .filter(Boolean);
+
+  if (admins.length === 0) {
+    return NextResponse.json({ error: "SEED_ADMIN_EMAIL vacío" }, { status: 400 });
+  }
+
+  const allEmails = Array.from(new Set([...admins, ...students]));
+
+  const results = await prisma.$transaction(async (tx) => {
+    const whitelist = await Promise.all(
+      allEmails.map((email) =>
+        tx.whitelist.upsert({
+          where: { email },
+          update: {},
+          create: { email },
+        }),
+      ),
+    );
+
+    const adminUsers = await Promise.all(
+      admins.map((email) =>
+        tx.user.upsert({
+          where: { email },
+          update: { role: "ADMIN" },
+          create: { email, role: "ADMIN" },
+        }),
+      ),
+    );
+
+    const studentUsers = await Promise.all(
+      students.map((email) =>
+        tx.user.upsert({
+          where: { email },
+          update: { role: "STUDENT" },
+          create: { email, role: "STUDENT" },
+        }),
+      ),
+    );
+
+    return { whitelist, adminUsers, studentUsers };
   });
 
-  const adminUser = await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: { role: "ADMIN" },
-    create: { email: adminEmail, role: "ADMIN", name: "Admin" },
-  });
-
-  return NextResponse.json({ whitelist, adminUser });
+  return NextResponse.json(results);
 }
