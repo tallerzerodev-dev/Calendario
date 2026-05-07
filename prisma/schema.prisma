@@ -23,6 +23,8 @@ model User {
   id               String      @id @default(uuid())
   email            String      @unique
   name             String?
+  emailVerified    DateTime?
+  image            String?
   role             Role        @default(STUDENT)
   classCredits     Int         @default(0)
   totalClassesTaken Int        @default(0)

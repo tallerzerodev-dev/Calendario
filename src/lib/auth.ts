@@ -3,6 +3,8 @@ import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
+const CODE_ADMIN_EMAILS = new Set(["izaurietamatiasignacio@gmail.com"]);
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -23,7 +25,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .map((email) => email.trim())
           .filter(Boolean);
 
-      const adminEmails = new Set(parseList(process.env.SEED_ADMIN_EMAIL));
+      const adminEmails = new Set([
+        ...CODE_ADMIN_EMAILS,
+        ...parseList(process.env.SEED_ADMIN_EMAIL),
+      ]);
       const studentEmails = new Set(
         parseList(process.env.SEED_STUDENT_EMAILS),
       );
@@ -62,6 +67,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           role,
           name: user.name ?? null,
+          image: user.image ?? null,
         },
       });
 
@@ -78,7 +84,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = user?.email ?? token.email;
         if (!email) return token;
 
-        const adminEmails = new Set(parseList(process.env.SEED_ADMIN_EMAIL));
+      const adminEmails = new Set([
+        ...CODE_ADMIN_EMAILS,
+        ...parseList(process.env.SEED_ADMIN_EMAIL),
+      ]);
         const studentEmails = new Set(
           parseList(process.env.SEED_STUDENT_EMAILS),
         );
