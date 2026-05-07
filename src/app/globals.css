@@ -6,11 +6,26 @@
   --fg: #0a0a0a;
   --muted: #6b7280;
   --subtle: #e5e7eb;
-  --surface: #f9fafb;
+  --surface: #f4f4f5;
   --ring: rgba(17, 24, 39, 0.45);
   --shadow: rgba(17, 24, 39, 0.12);
+  --grid: rgba(17, 24, 39, 0.08);
   --font-sans: var(--font-sora);
   --font-mono: var(--font-space-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0b0b0b;
+    --fg: #f5f5f5;
+    --muted: #a3a3a3;
+    --subtle: #2a2a2a;
+    --surface: #121212;
+    --ring: rgba(255, 255, 255, 0.45);
+    --shadow: rgba(0, 0, 0, 0.55);
+    --grid: rgba(255, 255, 255, 0.08);
+  }
 }
 
 @theme inline {
@@ -52,6 +67,6 @@ a {
 }
 
 .bg-grid {
-  background-image: radial-gradient(rgba(17, 24, 39, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(var(--grid) 1px, transparent 1px);
   background-size: 24px 24px;
 }

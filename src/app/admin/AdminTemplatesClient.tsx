@@ -81,9 +81,9 @@ export default function AdminTemplatesClient({ templates }: { templates: Templat
   };
 
   return (
-    <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
+    <div className="rounded-3xl border border-gray-200 bg-[var(--color-surface)] p-8 shadow-sm">
       <h2 className="text-xl font-semibold">Plantillas semanales</h2>
-      <p className="mt-1 text-sm text-gray-600">
+      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
         Define bloques horarios base para generación masiva de cupos.
       </p>
 
@@ -93,7 +93,7 @@ export default function AdminTemplatesClient({ templates }: { templates: Templat
       >
         <select
           name="dayOfWeek"
-          className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm"
+          className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:bg-gray-900 dark:border-gray-700"
           defaultValue="1"
         >
           <option value="1">Lunes</option>
@@ -107,26 +107,26 @@ export default function AdminTemplatesClient({ templates }: { templates: Templat
         <input
           type="time"
           name="startTime"
-          className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm"
+          className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:bg-gray-900 dark:border-gray-700"
           required
         />
         <input
           type="time"
           name="endTime"
-          className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm"
+          className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:bg-gray-900 dark:border-gray-700"
           required
         />
         <button
           type="submit"
           disabled={isPending}
-          className="sm:col-span-3 rounded-full bg-black px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:bg-gray-900 disabled:cursor-not-allowed disabled:bg-gray-700"
+          className="sm:col-span-3 rounded-full bg-black px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:bg-gray-900 disabled:cursor-not-allowed disabled:bg-gray-700 dark:bg-white dark:text-black"
         >
           Agregar plantilla
         </button>
       </form>
 
       {error && (
-        <div className="mt-4 rounded-2xl border border-gray-300 bg-gray-50 px-4 py-2 text-xs text-gray-700">
+        <div className="mt-4 rounded-2xl border border-gray-300 bg-gray-50 px-4 py-2 text-xs text-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-800">
           {error}
         </div>
       )}
@@ -135,26 +135,26 @@ export default function AdminTemplatesClient({ templates }: { templates: Templat
         {optimisticTemplates.map((template) => (
           <div
             key={template.id}
-            className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-200 px-4 py-3"
+            className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-200 px-4 py-3 dark:border-gray-800"
           >
             <div>
-              <div className="text-sm font-semibold text-gray-900">
+              <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 {dayLabels[template.dayOfWeek] ?? "Día"} · {template.startTime} - {template.endTime}
               </div>
-              <div className="text-xs text-gray-500">ID: {template.id}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">ID: {template.id}</div>
             </div>
             <button
               type="button"
               onClick={() => handleDelete(template.id)}
               disabled={isPending}
-              className="rounded-full border border-gray-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-gray-600 disabled:cursor-not-allowed"
+              className="rounded-full border border-gray-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-gray-600 disabled:cursor-not-allowed dark:text-gray-300 dark:border-gray-700"
             >
               Eliminar
             </button>
           </div>
         ))}
         {optimisticTemplates.length === 0 && (
-          <p className="text-sm text-gray-500">No hay plantillas aún.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">No hay plantillas aún.</p>
         )}
       </div>
     </div>

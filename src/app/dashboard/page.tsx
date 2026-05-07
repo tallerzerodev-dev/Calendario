@@ -35,17 +35,17 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-white px-6 py-12 text-gray-900">
+    <div className="min-h-screen bg-[var(--color-background)] px-6 py-12 text-[var(--color-foreground)]">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10">
-        <header className="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-gray-200 bg-gray-50/70 px-8 py-6 shadow-sm">
+        <header className="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-gray-200 bg-[var(--color-surface)] px-8 py-6 shadow-sm">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.4em] text-gray-500">
+            <div className="text-xs font-semibold uppercase tracking-[0.4em] text-gray-500 dark:text-gray-400">
               Panel estudiante
             </div>
             <h1 className="mt-2 text-3xl font-semibold">
               Hola {user?.name ?? session.user.email}
             </h1>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Créditos disponibles: {user?.classCredits ?? 0}
             </p>
           </div>
@@ -57,7 +57,7 @@ export default async function DashboardPage() {
           >
             <button
               type="submit"
-              className="rounded-full border border-gray-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-gray-600 transition hover:border-gray-400"
+              className="rounded-full border border-gray-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-gray-600 transition hover:border-gray-400 dark:text-gray-300 dark:border-gray-700"
             >
               Salir
             </button>

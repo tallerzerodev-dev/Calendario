@@ -85,13 +85,13 @@ export default function DashboardClient({ availableSlots, bookedSlots }: Props) 
 
   return (
     <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-      <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
+      <div className="rounded-3xl border border-gray-200 bg-[var(--color-surface)] p-8 shadow-sm">
         <h2 className="text-xl font-semibold text-gray-900">Cupos disponibles</h2>
-        <p className="mt-1 text-sm text-gray-600">
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           Selecciona un bloque horario para reservar tu clase.
         </p>
         {error && (
-          <div className="mt-4 rounded-2xl border border-gray-300 bg-gray-50 px-4 py-2 text-xs text-gray-700">
+          <div className="mt-4 rounded-2xl border border-gray-300 bg-gray-50 px-4 py-2 text-xs text-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-800">
             {error}
           </div>
         )}
@@ -99,13 +99,13 @@ export default function DashboardClient({ availableSlots, bookedSlots }: Props) 
           {optimisticAvailable.map((slot) => (
             <div
               key={slot.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3"
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 dark:bg-gray-900 dark:border-gray-800"
             >
               <div>
-                <div className="text-sm font-semibold text-gray-900">
+                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   {formatDate(new Date(slot.startTime))}
                 </div>
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-gray-600 dark:text-gray-400">
                   {toTimeString(new Date(slot.startTime))} - {toTimeString(new Date(slot.endTime))}
                 </div>
               </div>
@@ -113,36 +113,36 @@ export default function DashboardClient({ availableSlots, bookedSlots }: Props) 
                 type="button"
                 onClick={() => handleBook(slot)}
                 disabled={isPending}
-                className="rounded-full bg-black px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:bg-gray-900 disabled:cursor-not-allowed disabled:bg-gray-700"
+                className="rounded-full bg-black px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:bg-gray-900 disabled:cursor-not-allowed disabled:bg-gray-700 dark:bg-white dark:text-black"
               >
                 Reservar
               </button>
             </div>
           ))}
           {optimisticAvailable.length === 0 && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               No hay cupos disponibles aún. Revisa más tarde.
             </p>
           )}
         </div>
       </div>
 
-      <div className="rounded-3xl border border-gray-200 bg-gray-50/70 p-8 shadow-sm">
+      <div className="rounded-3xl border border-gray-200 bg-[var(--color-surface)] p-8 shadow-sm">
         <h2 className="text-xl font-semibold text-gray-900">Tus reservas</h2>
-        <p className="mt-1 text-sm text-gray-600">
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           Cancela con tiempo para liberar cupos.
         </p>
         <div className="mt-6 flex flex-col gap-3">
           {optimisticBooked.map((slot) => (
             <div
               key={slot.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-white px-4 py-3"
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:bg-gray-900 dark:border-gray-800"
             >
               <div>
-                <div className="text-sm font-semibold text-gray-900">
+                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   {formatDate(new Date(slot.startTime))}
                 </div>
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-gray-600 dark:text-gray-400">
                   {toTimeString(new Date(slot.startTime))} - {toTimeString(new Date(slot.endTime))}
                 </div>
               </div>
@@ -150,14 +150,14 @@ export default function DashboardClient({ availableSlots, bookedSlots }: Props) 
                 type="button"
                 onClick={() => handleCancel(slot)}
                 disabled={isPending}
-                className="rounded-full border border-gray-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-gray-600 transition hover:border-gray-400 disabled:cursor-not-allowed"
+                className="rounded-full border border-gray-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-gray-600 transition hover:border-gray-400 disabled:cursor-not-allowed dark:text-gray-300 dark:border-gray-700"
               >
                 Cancelar
               </button>
             </div>
           ))}
           {optimisticBooked.length === 0 && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Aún no tienes reservas activas.
             </p>
           )}

@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="es"
       className={`${sora.variable} ${spaceMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-gray-900">
+      <body className="min-h-full flex flex-col bg-[var(--color-background)] text-[var(--color-foreground)]">
         {children}
       </body>
     </html>

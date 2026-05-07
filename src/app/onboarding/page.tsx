@@ -30,24 +30,24 @@ export default async function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-16 text-gray-900">
-      <div className="w-full max-w-md rounded-3xl border border-gray-200 bg-white p-10 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-[0.4em] text-gray-500">
+    <div className="flex min-h-screen items-center justify-center bg-[var(--color-background)] px-6 py-16 text-[var(--color-foreground)]">
+      <div className="w-full max-w-md rounded-3xl border border-gray-200 bg-[var(--color-surface)] p-10 shadow-sm">
+        <div className="text-xs font-semibold uppercase tracking-[0.4em] text-gray-500 dark:text-gray-400">
           Bienvenida
         </div>
         <h1 className="mt-3 text-3xl font-semibold">Completa tu perfil</h1>
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Necesitamos tu nombre para habilitar el panel de reservas.
         </p>
         <form action={updateName} className="mt-8 flex flex-col gap-4">
           <input
             name="name"
             placeholder="Nombre completo"
-            className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm text-gray-900 focus:border-gray-400 focus:outline-none"
+            className="w-full rounded-2xl border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-900 focus:border-gray-400 focus:outline-none dark:text-gray-100 dark:border-gray-700"
           />
           <button
             type="submit"
-            className="w-full rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-900"
+            className="w-full rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-900 dark:bg-white dark:text-black"
           >
             Guardar y continuar
           </button>
