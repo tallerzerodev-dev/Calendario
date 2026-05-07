@@ -3,7 +3,22 @@ import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
+const normalizeEmail = (value?: string | null) =>
+  (value ?? "").trim().toLowerCase();
+
+const parseList = (value?: string | null) =>
+  (value ?? "")
+    .split(",")
+    .map((entry) => normalizeEmail(entry))
+    .filter(Boolean);
+
 const CODE_ADMIN_EMAILS = new Set(["izaurietamatiasignacio@gmail.com"]);
+
+const getAdminEmails = () =>
+  new Set([...CODE_ADMIN_EMAILS, ...parseList(process.env.SEED_ADMIN_EMAIL)]);
+
+const getStudentEmails = () =>
+  new Set(parseList(process.env.SEED_STUDENT_EMAILS));
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -17,27 +32,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async signIn({ user }) {
-      if (!user.email) return false;
+      const email = normalizeEmail(user.email);
+      if (!email) return false;
 
-      const parseList = (value?: string | null) =>
-        (value ?? "")
-          .split(",")
-          .map((email) => email.trim())
-          .filter(Boolean);
+      const adminEmails = getAdminEmails();
+      const studentEmails = getStudentEmails();
 
-      const adminEmails = new Set([
-        ...CODE_ADMIN_EMAILS,
-        ...parseList(process.env.SEED_ADMIN_EMAIL),
-      ]);
-      const studentEmails = new Set(
-        parseList(process.env.SEED_STUDENT_EMAILS),
-      );
-
-      const isAdmin = adminEmails.has(user.email);
-      const isStudent = studentEmails.has(user.email);
+      const isAdmin = adminEmails.has(email);
+      const isStudent = studentEmails.has(email);
 
       const allowed = await prisma.whitelist.findUnique({
-        where: { email: user.email },
+        where: { email },
       });
 
       const isAllowed = Boolean(allowed) || isAdmin || isStudent;
@@ -45,7 +50,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!isAllowed) return false;
 
       const dbUser = await prisma.user.findUnique({
-        where: { email: user.email },
+        where: { email },
       });
 
       const role = isAdmin
@@ -55,16 +60,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           : dbUser?.role ?? "STUDENT";
 
       await prisma.whitelist.upsert({
-        where: { email: user.email },
+        where: { email },
         update: {},
-        create: { email: user.email },
+        create: { email },
       });
 
       await prisma.user.upsert({
-        where: { email: user.email },
+        where: { email },
         update: { role },
         create: {
-          email: user.email,
+          email,
           role,
           name: user.name ?? null,
           image: user.image ?? null,
@@ -74,23 +79,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
     async jwt({ token, user }) {
-      const parseList = (value?: string | null) =>
-        (value ?? "")
-          .split(",")
-          .map((email) => email.trim())
-          .filter(Boolean);
-
       if (user?.email || token.email) {
-        const email = user?.email ?? token.email;
+        const email = normalizeEmail(user?.email ?? token.email);
         if (!email) return token;
+        token.email = email;
 
-      const adminEmails = new Set([
-        ...CODE_ADMIN_EMAILS,
-        ...parseList(process.env.SEED_ADMIN_EMAIL),
-      ]);
-        const studentEmails = new Set(
-          parseList(process.env.SEED_STUDENT_EMAILS),
-        );
+        const adminEmails = getAdminEmails();
+        const studentEmails = getStudentEmails();
 
         const dbUser = await prisma.user.findUnique({
           where: { email },
@@ -98,12 +93,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (adminEmails.has(email)) {
           token.role = "ADMIN";
-          if (dbUser && dbUser.role !== "ADMIN") {
-            await prisma.user.update({
-              where: { email },
-              data: { role: "ADMIN" },
-            });
-          }
+          await prisma.user.upsert({
+            where: { email },
+            update: { role: "ADMIN" },
+            create: { email, role: "ADMIN" },
+          });
         } else if (studentEmails.has(email)) {
           token.role = "STUDENT";
         } else {
@@ -116,7 +110,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = (token.role as string) ?? "STUDENT";
+        const email = normalizeEmail(token.email ?? session.user.email);
+        const adminEmails = getAdminEmails();
+        const studentEmails = getStudentEmails();
+
+        if (email && adminEmails.has(email)) {
+          session.user.role = "ADMIN";
+        } else if (email && studentEmails.has(email)) {
+          session.user.role = "STUDENT";
+        } else {
+          session.user.role = (token.role as string) ?? "STUDENT";
+        }
+
         session.user.name = token.name ?? session.user.name;
       }
       return session;
