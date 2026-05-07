@@ -7,8 +7,9 @@ import { sendTelegramMessage } from "@/lib/telegram";
 
 export async function bookSlot(formData: FormData) {
   const session = await auth();
+  const email = session?.user?.email ?? null;
 
-  if (!session?.user?.email) {
+  if (!email) {
     throw new Error("No autenticado");
   }
 
@@ -18,7 +19,7 @@ export async function bookSlot(formData: FormData) {
 
   return prisma.$transaction(async (tx) => {
     const user = await tx.user.findUnique({
-      where: { email: session.user.email },
+      where: { email },
     });
 
     if (!user) {
@@ -60,8 +61,9 @@ export async function bookSlot(formData: FormData) {
 
 export async function cancelSlot(formData: FormData) {
   const session = await auth();
+  const email = session?.user?.email ?? null;
 
-  if (!session?.user?.email) {
+  if (!email) {
     throw new Error("No autenticado");
   }
 
@@ -71,7 +73,7 @@ export async function cancelSlot(formData: FormData) {
 
   return prisma.$transaction(async (tx) => {
     const user = await tx.user.findUnique({
-      where: { email: session.user.email },
+      where: { email },
     });
 
     if (!user) {
