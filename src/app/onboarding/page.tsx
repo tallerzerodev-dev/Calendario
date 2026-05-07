@@ -4,13 +4,17 @@ import { redirect } from "next/navigation";
 
 export default async function OnboardingPage() {
   const session = await auth();
+  const email = session?.user?.email ?? null;
 
-  if (!session?.user?.email) {
+  if (!email) {
     redirect("/login");
   }
 
   async function updateName(formData: FormData) {
     "use server";
+    if (!email) {
+      redirect("/login");
+    }
     const name = String(formData.get("name") ?? "").trim();
 
     if (!name) {
@@ -18,7 +22,7 @@ export default async function OnboardingPage() {
     }
 
     await prisma.user.update({
-      where: { email: session.user.email ?? "" },
+      where: { email },
       data: { name },
     });
 
